@@ -1,7 +1,5 @@
 
-module Boards (Board, Cell, getRow, getColumn, getValue, hasNoRepetitions,
-    respectsSequence, respectsColumn, respectsRow, isValidCell,
-    filterZeros) where
+module Boards (Board, Cell, respectsColumn, respectsColumnNoSequence) where
     import Data.List
     
     -- the type Cell contains a 1 >= x >= N value, a boolean informing whether
@@ -97,7 +95,6 @@ module Boards (Board, Cell, getRow, getColumn, getValue, hasNoRepetitions,
 
 
 
-    -- TODO
     -- checks if the given list follows a sequence, that is, if each element n
     -- from the list has its predecessor and successor also on the list, with
     -- the exception of the greater and the smaller elements
@@ -105,7 +102,6 @@ module Boards (Board, Cell, getRow, getColumn, getValue, hasNoRepetitions,
     --     List l - the list to be checked
     -- @returns:
     --     True if the elements on the list are a sequence, False otherwise
-    -- we'll have to figure out this one later, tbh
     respectsSequence :: [Cell] -> Bool
     respectsSequence l = all (`elem` (getValues (filterZerosBlacks l))) [minimum (getValues (filterZerosBlacks l)) .. maximum (getValues(filterZerosBlacks l))]
 
@@ -122,6 +118,18 @@ module Boards (Board, Cell, getRow, getColumn, getValue, hasNoRepetitions,
                                 && respectsSequence (getColumn b i))
 
 
+    
+    -- checks whether there are any repeated numbers in this row, without 
+    -- checking if the sequence is followed
+    -- @arguments:
+    --     Board b - the board containing the cell
+    --     Cell (_, _, i, _) = takes the row index info from the cell
+    -- @returns: 
+    --     True if there are no repeated numbers, False otherwise
+    respectsRowNoSequence :: Board -> Cell -> Bool
+    respectsRowNoSequence b (_, _, i, _) = hasNoRepetitions (getValues (filterZeros (getRow b i)))
+
+
 
     -- checks whether there are any repeated numbers in this column
     -- @arguments:
@@ -132,6 +140,18 @@ module Boards (Board, Cell, getRow, getColumn, getValue, hasNoRepetitions,
     respectsColumn :: Board -> Cell -> Bool
     respectsColumn b (_, _, _, i) = ((hasNoRepetitions (getValues (filterZeros (getColumn b i))))
                                     && respectsSequence (getColumn b i))
+
+
+
+    -- checks whether there are any repeated numbers in this column, without 
+    -- checking if the sequence is followed
+    -- @arguments:
+    --     Board b - the board containing the cell
+    --     Cell (_, _, _, i) = takes the column index info from the cell
+    -- @returns: 
+    --     True if there are no repeated numbers, False otherwise
+    respectsColumnNoSequence :: Board -> Cell -> Bool
+    respectsColumnNoSequence b (_, _, _, i) = hasNoRepetitions (getValues (filterZeros (getColumn b i)))
 
 
 
