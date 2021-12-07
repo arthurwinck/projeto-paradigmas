@@ -1,5 +1,5 @@
 
-module Boards (Board, Cell, respectsColumn, respectsColumnNoSequence) where
+module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence) where
     import Data.List
     
     -- the type Cell contains a 1 >= x >= N value, a boolean informing whether
@@ -60,7 +60,6 @@ module Boards (Board, Cell, respectsColumn, respectsColumnNoSequence) where
     --      a list containing the values of the cells
     getValues :: [Cell] -> [Int]
     getValues l = map getValue l
-
 
 
 
@@ -155,6 +154,19 @@ module Boards (Board, Cell, respectsColumn, respectsColumnNoSequence) where
 
 
 
+    -- checks if the cell respects the rules of the game, disregarding
+    -- sequence
+    -- @arguments:
+    --     Board b - the Board that contains the cell
+    --     Cell c - the Cell to be verified
+    -- @returns:
+    --     True if the cell respects all the three rules, False otherwise
+    isValidCellNoSequence :: Board -> Cell -> Bool
+    isValidCellNoSequence b c = ((respectsRowNoSequence b c)
+                                && (respectsColumnNoSequence b c))
+
+
+
     -- checks if the cell respects the rules of the game
     -- @arguments:
     --     Board b - the Board that contains the cell
@@ -166,10 +178,31 @@ module Boards (Board, Cell, respectsColumn, respectsColumnNoSequence) where
 
 
 
+    -- changes the value of the parameter
+    -- @arguments:
+    --     Bool - the initial value
+    -- @returns:
+    --      the initial value negated
+    negator :: Bool -> Bool
+    negator True = False
+    negator False = True
+
+
+
     -- checks if the current position of board is valid
     -- @arguments:
     --     Board b - the board to be checked
     -- @returns:
     --     True if the rules are followed for all the cells, False otherwise
-    -- isValidBoard :: Board -> Bool
-    -- isValidBoard b = elem False (map isValidCell (map all b))
+    isValidBoard :: Board -> Bool
+    isValidBoard b = negator (elem False (map (\c -> isValidCell b c) (foldl (++) [] b)))
+
+
+
+    -- checks if the current position of board is valid, disregarding sequence
+    -- @arguments:
+    --     Board b - the board to be checked
+    -- @returns:
+    --     True if the rules are followed for all the cells, False otherwise
+    isValidBoardNoSequence :: Board -> Bool
+    isValidBoardNoSequence b = negator (elem False (map (\c -> isValidCellNoSequence b c) (foldl (++) [] b)))
