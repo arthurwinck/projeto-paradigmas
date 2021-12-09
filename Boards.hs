@@ -18,6 +18,7 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) wher
     getColumn :: Board -> Int -> [Cell]
     getRow :: Board -> Int -> [Cell]
     getValue :: Cell -> Int
+    setValue :: Int -> Cell -> Cell
     getValues :: [Cell] -> [Int]
     negator :: Bool -> Bool
 
@@ -82,8 +83,8 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) wher
 
 
     -- Changes the value of a given cell
-    setValue :: Int -> Cell -> Cell
     setValue num (a,b,c,d) = (num,b,c,d)
+
     -- changes the value of the parameter
     -- @arguments:
     --     Bool - the initial value
