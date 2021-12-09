@@ -17,6 +17,10 @@ main = do
                   [(3, True,  4, 0), (6, True, 4, 1), (5, True, 4, 2), (4, True, 4, 3), (2, True, 4, 4), (0, False, 4, 5)],
                   [(0, False, 5, 0), (0, False,5, 1), (0, False,5, 2), (2, True, 5, 3), (1, True, 5, 4), (4, False, 5, 5)]]
 
+    let cell = (0,True,1,0)
+
+    putStrLn(show (setValue 5 cell))
+
     putStrLn (show (isValidBoard puzzle)) -- False
     putStrLn (show (isValidBoard solution)) -- True
 

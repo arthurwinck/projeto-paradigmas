@@ -1,5 +1,5 @@
 
-module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence) where
+module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) where
     import Data.List
     
     -- the type Cell contains a 1 >= x >= N value, a boolean informing whether
@@ -62,6 +62,9 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence) where
     getValues l = map getValue l
 
 
+    -- Changes the value of a given cell
+    setValue :: Int -> Cell -> Cell
+    setValue num (a,b,c,d) = (num,b,c,d)
 
     -- filters cells that contain zero from a given row/column
     -- @arguments:
