@@ -1,6 +1,7 @@
 
-module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) where
+module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue, generateNumber) where
     import Data.List
+    import System.Random
     
     -- the type Cell contains a 1 >= x >= N value, a boolean informing whether
     -- its a black or white cell, and information on its row and column index
@@ -21,6 +22,7 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) wher
     setValue :: Int -> Cell -> Cell
     getValues :: [Cell] -> [Int]
     negator :: Bool -> Bool
+    generateNumberList :: Int -> [Int]
 
     -- VERIFICATION FUNCTIONS
     -- Functions used for verifying if the board is currently in a consistent
@@ -37,6 +39,7 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) wher
     respectsRow :: Board -> Cell -> Bool
     respectsRowNoSequence :: Board -> Cell -> Bool
     respectsSequence :: [Cell] -> Bool
+    
 
 
 
@@ -93,6 +96,9 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) wher
     negator True = False
     negator False = True
 
+    generateNumberList a = [1..a]
+
+    removeNumberList (a:s)
 
     -- filters cells that contain zero from a given row/column
     -- @arguments:
