@@ -1,5 +1,5 @@
 
-module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue, getCell, getColor, getValue, getNextWhite, itoxy, xytoi, respectsColumnNoSequence) where
+module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, getCell, getColor, getValue, getNextWhite, itoxy, xytoi, getRow, respectsColumnNoSequence, tryWith, tryWithCond, setValue) where
     import Data.List
     
     -- the type Cell contains a 1 >= x >= N value, a boolean informing whether
@@ -18,13 +18,17 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue, getC
     getColumn :: Board -> Int -> [Cell]
     getRow :: Board -> Int -> [Cell]
     getValue :: Cell -> Int
-    setValue :: Int -> Cell -> Cell
+    setValueHelper :: Int -> (Int, Int) -> ([Cell],[Cell]) -> [Cell]
+    setValue :: Int -> (Int,Int) -> Board -> Board
+    setRowHelper :: [Cell] -> (Board, Board) -> Board
+    setRow :: [Cell] -> Int -> Board -> Board
     getValues :: [Cell] -> [Int]
     negator :: Bool -> Bool
     getProxNum :: Int -> Int
     getCell :: Board -> (Int,Int) -> Cell
     itoxy :: Int -> (Int,Int)  -- Apenas para 6x6 por enquanto!!!!!
     xytoi :: (Int,Int) -> Int -- Apenas para 6x6 por enquanto!!!!!
+
     -- VERIFICATION FUNCTIONS
     -- Functions used for verifying if the board is currently in a consistent
     -- state
@@ -43,10 +47,9 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue, getC
     
     -- FLOW FUNCTIONS
 
-    save :: [Board] -> Board -> [Board]
     getNextWhite :: Board -> (Int,Int) -> Cell
-    -- tryWith :: Int -> Board -> (Int,Int) -> Board
-    -- addElement :: Int -> Board -> (Int, Int) -> Cell
+    tryWith :: Int -> Board -> (Int,Int) -> Board
+    tryWithCond :: Int -> Board -> (Int,Int) -> Bool
 
     -- retrieves the color from a cell
     -- @arguments:
@@ -89,9 +92,12 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue, getC
     --      a list containing the values of the cells
     getValues l = map getValue l
 
+    setRowHelper row (lx,_:lxs) = lx ++ row : lxs
+    setRow row x board = setRowHelper row (splitAt (x - 1) board)
 
     -- Changes the value of a given cell
-    setValue num (a,b,c,d) = (num,b,c,d)
+    setValueHelper elem (x,y) (lx,_:lxs) = lx ++ (elem, True, x,y) : lxs
+    setValue elem (x,y) board =  setRow (setValueHelper elem (x,y) (splitAt (y-1) (getRow board (x-1)))) x board 
 
     -- changes the value of the parameter
     -- @arguments:
@@ -224,9 +230,6 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue, getC
 
     -- Flow Functions
 
-    -- Save puts the new move on a list, for when its necessary to revert to a older move
-    save boardList newBoard = boardList ++ [newBoard]
-
     -- Returns the nearest white unedited position
     -- If the current position isn't avaible, go to the next position 
     getNextWhite board (x,y) | ((getColor (cell)) == True) && ((getValue cell) == 0) = getCell board (x,y)
@@ -235,8 +238,14 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue, getC
                 
     -- Tries to add a number to a certain position on the board, returning the new board (new move)
     -- Nothing?
-    -- tryWith elem board (x,y) | ((respectsColumnNoSequence board cell) == True) && ((respectsRowNoSequence board cell) == True) = addElement elem board (x,y) 
-    --                          | otherwise = board
-    --                          where cell = getCell board (x,y)
+    tryWith elem board (x,y) | tryWithCond elem board (x,y) = setValue elem (x,y) board
+                             | otherwise = board
+                             where cell = getCell board (x,y)
 
-    -- addElement elem board (x,y) = setValue elem (getCell board (x,y)) 
+    -- Encapsulates the condition of tryWith 
+    tryWithCond elem board (x,y) | ((respectsColumnNoSequence board cell) == True) && ((respectsRowNoSequence board cell) == True) = True
+                                 |otherwise = False
+                                 where cell = getCell board (x,y)
+
+    -- Driver function
+    solve elem board (x,y) = 
