@@ -246,6 +246,3 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, getCell, getCo
     tryWithCond elem board (x,y) | ((respectsColumnNoSequence board cell) == True) && ((respectsRowNoSequence board cell) == True) = True
                                  |otherwise = False
                                  where cell = getCell board (x,y)
-
-    -- Driver function
-    solve elem board (x,y) = 
