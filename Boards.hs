@@ -1,5 +1,5 @@
 
-module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) where
+module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue, getCell, getColor, getValue, getNextWhite, itoxy, xytoi, respectsColumnNoSequence) where
     import Data.List
     
     -- the type Cell contains a 1 >= x >= N value, a boolean informing whether
@@ -21,7 +21,10 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) wher
     setValue :: Int -> Cell -> Cell
     getValues :: [Cell] -> [Int]
     negator :: Bool -> Bool
-
+    getProxNum :: Int -> Int
+    getCell :: Board -> (Int,Int) -> Cell
+    itoxy :: Int -> (Int,Int)  -- Apenas para 6x6 por enquanto!!!!!
+    xytoi :: (Int,Int) -> Int -- Apenas para 6x6 por enquanto!!!!!
     -- VERIFICATION FUNCTIONS
     -- Functions used for verifying if the board is currently in a consistent
     -- state
@@ -37,8 +40,13 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) wher
     respectsRow :: Board -> Cell -> Bool
     respectsRowNoSequence :: Board -> Cell -> Bool
     respectsSequence :: [Cell] -> Bool
+    
+    -- FLOW FUNCTIONS
 
-
+    save :: [Board] -> Board -> [Board]
+    getNextWhite :: Board -> (Int,Int) -> Cell
+    -- tryWith :: Int -> Board -> (Int,Int) -> Board
+    -- addElement :: Int -> Board -> (Int, Int) -> Cell
 
     -- retrieves the color from a cell
     -- @arguments:
@@ -92,6 +100,16 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) wher
     --      the initial value negated
     negator True = False
     negator False = True
+
+    -- Returns the next number in the range of the size of the board
+    getProxNum a = mod (a + 1) 6
+
+
+    -- Returns the cell on the desired position
+    getCell board (x,y) = (board !! x) !! y
+
+    itoxy i = (i `quot` 6, i `rem` 6)
+    xytoi (x,y) = x*6 + y 
 
 
     -- filters cells that contain zero from a given row/column
@@ -203,3 +221,22 @@ module Boards (Board, Cell, isValidBoard, isValidBoardNoSequence, setValue) wher
     -- @returns:
     --     True if the elements on the list are a sequence, False otherwise
     respectsSequence l = all (`elem` (getValues (filterZerosBlacks l))) [minimum (getValues (filterZerosBlacks l)) .. maximum (getValues(filterZerosBlacks l))]
+
+    -- Flow Functions
+
+    -- Save puts the new move on a list, for when its necessary to revert to a older move
+    save boardList newBoard = boardList ++ [newBoard]
+
+    -- Returns the nearest white unedited position
+    -- If the current position isn't avaible, go to the next position 
+    getNextWhite board (x,y) | ((getColor (cell)) == True) && ((getValue cell) == 0) = getCell board (x,y)
+                             | otherwise = getNextWhite board (itoxy ((xytoi (x,y)) + 1))
+                             where cell = getCell board (x,y)
+                
+    -- Tries to add a number to a certain position on the board, returning the new board (new move)
+    -- Nothing?
+    -- tryWith elem board (x,y) | ((respectsColumnNoSequence board cell) == True) && ((respectsRowNoSequence board cell) == True) = addElement elem board (x,y) 
+    --                          | otherwise = board
+    --                          where cell = getCell board (x,y)
+
+    -- addElement elem board (x,y) = setValue elem (getCell board (x,y)) 
